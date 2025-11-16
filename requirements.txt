@@ -15,5 +15,5 @@ faiss-gpu==1.7.2
 transformers==4.47.1
 accelerate==1.8.1
 datasets==3.6.0
-# python -m spacy download en_core_web_sm
+# you need to: python -m spacy download en_core_web_sm
 #pip show faiss-gpu | grep Version
