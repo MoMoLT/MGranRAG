@@ -1,0 +1,19 @@
+# python=3.10.16
+# #0.6.6.post1
+vllm==0.7.0
+langchain==0.3.26
+langchain_community==0.3.26
+langchain_huggingface==0.1.2
+langchain_chroma==0.2.4
+rapidfuzz==3.13.0
+pandas==2.2.3
+igraph==0.11.8
+spacy==3.7.2
+blingfire==0.1.8
+pyarrow==20.0.0
+faiss-gpu==1.7.2
+transformers==4.51.1
+accelerate==1.8.1
+datasets==3.6.0
+# python -m spacy download en_core_web_sm
+#pip show faiss-gpu | grep Version
