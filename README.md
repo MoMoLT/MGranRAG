@@ -1,3 +1,5 @@
+Iterative Multi-Granular RAG with Contextual Hierarchical Graph
+
 # MGranRAG System Deployment and User Manual
 
 This manual provides a comprehensive guide to the setup, dataset configuration, model deployment, and execution workflow for the MGranRAG system. Due to dependency conflicts between NV-Embed-v2 and Qwen3, and to support large models (e.g., Llama3.3-70B) under 80GB of system memory, the system adopts a dual-environment architecture: one dedicated to LLM serving and another for RAG task execution.
@@ -188,5 +190,6 @@ If using a single default LLM for both retrieval and QA, execute the full pipeli
 ```bash
 python main.py --data hotpotqa --mode end2end  --epoch 1
 ```
+
 
 This mode automatically orchestrates retrieval and generation, suitable for testing and rapid validation.
