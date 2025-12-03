@@ -36,23 +36,33 @@ class SentenceFilter:
         return len(token_ids), token_ids
 
     def strip_filter(self, query_mapping, mapping, mapping_fact_ids, mapping_fact_texts, response):
-        res = re.findall('\[sentence (\d*)@(\d*) BEGIN\](.*?)reason:', response, re.S)
+        # res = re.findall('\[sentence (\d*)@(\d*) BEGIN\](.*?)reason:', response, re.S)
+        res = re.findall('\[sentence (\d*)@(\d*)\](.*?)reason:', response, re.S)
         evidences = {}  #
         # 为了防止重复fact_id，因为复读现象
         processed_fact_ids = set()
         for line in res:
             doc_id, sentence_id, context = line
             content_res = re.findall(
-                'content:(.*?)explicit_content:(.*?)supplementary_facts:(.*?)relevant_clozes:(.*?)keywords:(.*)',
+                'explicit_content:(.*?)supplementary_facts:(.*?)relevant_questions:(.*?)keywords:(.*)',
                 context, re.S)
+            # print(">>>>>>>>>>>>>>>>>")
+            # print(context)
+            # print("------------------------------")
+            # print(content_res)
+            # content_res = re.findall(
+            #     'content:(.*?)explicit_content:(.*?)supplementary_facts:(.*?)relevant_clozes:(.*?)keywords:(.*)',
+            #     context, re.S)
             if len(content_res) == 0:
                 continue
             fact_id = f'{doc_id}@{sentence_id}'
             if fact_id in processed_fact_ids:
                 continue
             processed_fact_ids.add(fact_id)
-            content, explicit_content, supplementary_facts, relevant_clozes, keywords_str = content_res[0]
-            relevant_supported_list = re.findall("#(\d*?)#\[([TP])\]", relevant_clozes, re.S)
+            # content, explicit_content, supplementary_facts, relevant_clozes, keywords_str = content_res[0]
+            explicit_content, supplementary_facts, relevant_clozes, keywords_str = content_res[0]
+            # relevant_supported_list = re.findall("#(\d*?)#\[([TP])\]", relevant_clozes, re.S)
+            relevant_supported_list = re.findall("Q(\d*?)\[([TP])\]", relevant_clozes, re.S)
             supported_scores = {'query': 0, 'rewritten': 0, 'subquery': 0}
             subquery_num = 0
             for query_idx, level in relevant_supported_list:
@@ -78,7 +88,8 @@ class SentenceFilter:
             # keywords = list(keywords)
 
             if fact_id not in mapping:
-                suggestions = difflib.get_close_matches(content.strip(), mapping_fact_texts)
+                # suggestions = difflib.get_close_matches(content.strip(), mapping_fact_texts)
+                suggestions = difflib.get_close_matches(explicit_content.strip(), mapping_fact_texts)
                 if len(suggestions) == 0:
                     # print("query: ", query)
                     # print("ERROR ID: ", fact_id)
@@ -94,7 +105,6 @@ class SentenceFilter:
                                'keywords': keywords, 'relevant_clozes': set(relevant_supported_list), 'score': score}
 
         return evidences
-
     def batch_filter(self, batch_query_solutions):
         # 首先搜集所有的fact
         all_query_info = {}
@@ -115,16 +125,19 @@ class SentenceFilter:
             input_questions = []
             cidx = 10
             # 重要性从小到大
-            input_questions.append(f"[#{cidx}#] {query}")
+            # input_questions.append(f"[#{cidx}#] {query}")
+            input_questions.append(f"Q{cidx}: {query}")
             mapping_query_type[cidx] = 'query'
             cidx += 1
             if rewritten_query is not None:
-                input_questions.append(f"[#{cidx}#] {rewritten_query}")
+                # input_questions.append(f"[#{cidx}#] {rewritten_query}")
+                input_questions.append(f"Q{cidx}: {rewritten_query}")
                 mapping_query_type[cidx] = 'rewritten'
                 cidx += 1
 
             for cloze in subqueries:
-                input_questions.append(f"[#{cidx}#] {cloze}")
+                # input_questions.append(f"[#{cidx}#] {cloze}")
+                input_questions.append(f"Q{cidx}: {cloze}")
                 mapping_query_type[cidx] = 'subquery'
                 cidx += 1
 
