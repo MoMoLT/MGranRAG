@@ -24,9 +24,7 @@ def get_embedding_model(config):
         if config.rag.model_mode == 'normal':
             embedding_model = HuggingFaceEmbeddings(model_name=config.rag.embedding_path,
                                                     model_kwargs={"trust_remote_code": True},
-                                                    encode_kwargs={'normalize_embeddings': True,
-                                                                   'max_length': config.rag.max_embedding_length,
-                                                                   "truncate": True}
+                                                    encode_kwargs={'normalize_embeddings': True}
                                                     )
         else:
             embedding_model = NVEmbedding(model_name=config.rag.embedding_path,
@@ -38,8 +36,7 @@ def get_embedding_model(config):
         if config.rag.model_mode == 'normal':
             embedding_model = HuggingFaceEmbeddings(model_name=config.rag.embedding_path,
                                                     model_kwargs={"trust_remote_code": True},
-                                                    encode_kwargs={' ': True,
-                                                                   "truncate": True}
+                                                    encode_kwargs={'normalize_embeddings': Truee}
                                                     )
         else:
             embedding_model = NVEmbedding(model_name=config.rag.embedding_path,
