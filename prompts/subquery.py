@@ -3,7 +3,6 @@ query1 = """As a knowledge graph expert, I need to extract relevant entities and
 For example, consider the question: 
 Which state does the drug stores, of which the CEO is Warren Bryant, are located?
 
-To find the answer, we need to query the "state." But since there are too many "states," we can use the "drug stores," "CEO," and "Warren Bryant" in the question to narrow it down.
 From the question, we can identify four key entities with their types:
 - durg stores[&organization&]
 - Warren Bryant[&person&]
@@ -13,7 +12,7 @@ From the question, we can identify four key entities with their types:
 Relationships form a connected chain:
 - chain 1: Warren Bryant → CEO → durg stores → state
 
-Next, we break down the relationships between these entities into simple triplets:
+Break down the relationships into simple triplets:
 relation1:
     - relation_type: person_position
     - subquery: Who is the CEO of the drug stores?
@@ -35,13 +34,13 @@ relation3:
 
 # Relationships chain
 - chain 1: entityX → entityY → entityZ
-- chain 2: entityY → entityU
+- ...
 
 # Generate Relationship
 relationX:
     - relation_type: relationship type
-    - subquery: A subsidiary query derived from the relationships to refine or support the main query.
-    - template: Natural language template of the relationship, with key entities placed in [].
+    - subquery: Subsidiary query to refine the main query
+    - template: Natural language template with [entities]
 ...
 ```
 
@@ -57,61 +56,36 @@ reply1 = """# Extract Entities
 # Relationships chain
 - chain 1: Sophia Patel → director → AI lab → university
 
-
 # Generate Relationship
 relation1:
     - relation_type: person_position
     - subquery: Who is the director of the AI lab?
-    - template: [Sophia Patel] holds the position of [director].
 relation2:
     - relation_type: position_organization
     - subquery: What AI lab has a director position?
-    - template: The [director] is a role at [AI lab].
 relation3:
     - relation_type: organization_institution
     - subquery: Which university does the AI lab belong to?
-    - template: The [AI lab] belongs to [university].
 """
-query2 = """The question is not just limited to simple ones; there are also comparative questions, such as:
+query2 = """Comparative questions require extracting comparative information for each entity. For example:
 Which magazine was started first, Arthur's Magazine or First for Women?
 
-**Step 1: Extract Entities**
+# Step 1: Extract Entities
 - Arthur's Magazine [&publication&]
 - First for Women [&publication&]
 - publication date [&temporal&]
 
-Note that we have extracted "publication date." For comparative questions, we should identify the comparative information for each entity involved. In this case, the comparative information is the "publication date."
-**Step 2: Relationships chain**
+# Step 2: Relationships chain
 - chain 1: Arthur's Magazine → publication date
 - chain 2: First for Women → publication date
 
-**Step 3: Generate Relationship**
+# Step 3: Generate Relationship
 relation1:
     - type: publication_time
     - subquery: When was Arthur's Magazine first published?
-    - template: [Arthur's Magazine] was first published on [publication date].
 relation2:
     - type: publication_time
     - subquery: When was First for Women first published?
-    - template: [First for Women] was first published on [publication date].
-
-For explanatory questions, only entity extraction is required, as follows:
-Explanatory Questions such as:
-- "Why do leaves change color in autumn?"  
-- "How does a vaccine work in the human body?"  
-- "What causes earthquakes?"  
-
-Input Question: Why do leaves change color in autumn? 
-**Step 1: Extract Entities**
-- leaves [&object&]
-- autumn [&time_period&]
-- color change [&event&]
-
-**Step 2: Relationships chain**
-- chain 1: autumn → leaves → color change
-
-**Step 3: Generate Relationship**
-N/A
 
 Next, please address this question:
 Who is older, Leonardo DiCaprio or Brad Pitt?
@@ -129,11 +103,9 @@ reply2 = """# Extract Entities
 relation1:
     - type: birth_date
     - subquery: When was Leonardo DiCaprio born?
-    - template: [Leonardo DiCaprio] was born on [birth date].
 relation2:
     - type: birth_date
     - subquery: When was Brad Pitt born?
-    - template: [Brad Pitt] was born on [birth date].
 """
 query3 = """Next, please address this question:
 Who created an amusement park in Midnight City?
@@ -163,6 +135,7 @@ Who is the current president of France?
 reply4 = """# Extract Entities
 - France [&location&]
 - president [&role&]
+- [person] [&person&]
 
 # Relationships chain
 - chain 1: France → president → [person]
@@ -171,11 +144,9 @@ reply4 = """# Extract Entities
 relation1:
     - relation_type: position_organization
     - subquery: What country has the president role?
-    - template: The [president] is a role in [France].
 relation2:
     - relation_type: person_position
     - subquery: Who is the current president of France?
-    - template: [person] holds the position of [president].
 """
 query5 = """Which planet is larger, Mars or Venus?"""
 reply5 = """# Extract Entities
@@ -214,11 +185,11 @@ prompt_template = [
     {"role": "assistant", "content": reply1},
     {"role": "user", "content": query2},
     {"role": "assistant", "content": reply2},
-    {"role": "user", "content": query3},
-    {"role": "assistant", "content": reply3},
+    # {"role": "user", "content": query3},
+    # {"role": "assistant", "content": reply3},
     {"role": "user", "content": query4},
     {"role": "assistant", "content": reply4},
-    {"role": "user", "content": query5},
-    {"role": "assistant", "content": reply5},
+    # {"role": "user", "content": query5},
+    # {"role": "assistant", "content": reply5},
     {"role": "user", "content": question_input}
 ]
